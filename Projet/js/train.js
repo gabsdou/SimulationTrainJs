@@ -130,6 +130,15 @@ class Plateau{
 
 // TODO : d'autres classes si besoin
 
+class Train{
+	constructor(posX,posY,type){
+		this.x = posX;
+		this.y = posY;
+		this.type = type;
+		this.direction= "droite";
+	}
+}
+
 
 /************************************************************/
 // Méthodes
@@ -300,17 +309,23 @@ function tchou(){
 	// Variables DOM
 	/*------------------------------------------------------------*/
 	const contexte = document.getElementById('simulateur').getContext("2d");
+	let Pause = false;
+	document.getElementById('bouton_pause').addEventListener('click', function() {
+		Pause = !Pause;
+	});
 
 	// NOTE: ce qui suit est sûrement à compléter voire à réécrire intégralement
 
 	// Création du plateau
 	let plateau = new Plateau();
+	let tableauTrains = [];
 	cree_plateau_initial(plateau);
+
 
 	// Dessine le plateau
 	dessine_plateau(contexte, plateau);
-	boutonsinit(plateau);
-	console.log(contexte);
+	boutonsinit(plateau,tableauTrains);
+	setInterval(() => {deplacer_trains(plateau,tableauTrains,Pause);}, 500);
 
 }
 
@@ -320,21 +335,22 @@ function tchou(){
 // NOTE: rien à modifier ici !
 window.addEventListener("load", () => {
 	// Appel à la fonction principale
+
 	tchou();
 
 });
-function boutonsinit(plateau){
+
+function boutonsinit(plateau,tableauTrains){
 	const boutons = document.querySelectorAll('input');
-		boutons.forEach((bouton) => {
-			bouton.addEventListener('click', () => {
-				console.log(bouton.id);
-				bouton.disabled = true;
-				posercase(bouton.id,plateau);
-				bouton.disabled = false;
-			});
+	boutons.forEach((bouton) => {
+		bouton.addEventListener('click', () => {
+			bouton.disabled = true;
+			posercase(bouton.id,plateau,tableauTrains,bouton);
 		});
+	});
 }
-function posercase(id,plateau){
+
+function posercase(id,plateau,tableauTrains,bouton){
 	const canvas = document.getElementById('simulateur');
 	const contexte = document.getElementById('simulateur').getContext("2d");
 
@@ -344,18 +360,200 @@ function posercase(id,plateau){
     	const y = event.clientY - rect.top;
     	const caseX = Math.floor(x / LARGEUR_CASE);
     	const caseY = Math.floor(y / HAUTEUR_CASE);
-		console.log(id);
 		switch(id){
-			case "foret" : plateau.cases[caseX][caseY] = Type_de_case.Foret; break;
-			case "eau" : plateau.cases[caseX][caseY] = Type_de_case.Eau; break;
-			case "rail_horizontal" : plateau.cases[caseX][caseY] = Type_de_case.Rail_horizontal; break;
-			case "rail_vertical" : plateau.cases[caseX][caseY] = Type_de_case.Rail_vertical; break;
-			case "rail_droite_vers_haut" : plateau.cases[caseX][caseY] = Type_de_case.Rail_droite_vers_haut; break;
-			case "rail_haut_vers_droite" : plateau.cases[caseX][caseY] = Type_de_case.Rail_haut_vers_droite; break;
-			case "rail_droite_vers_bas" : plateau.cases[caseX][caseY] = Type_de_case.Rail_droite_vers_bas; break;
-			case "rail_bas_vers_droite" : plateau.cases[caseX][caseY] = Type_de_case.Rail_bas_vers_droite; break;
+			case "bouton_foret" : plateau.cases[caseX][caseY] = Type_de_case.Foret;dessine_case(contexte,plateau,caseX,caseY); break;
+			case "bouton_eau" : plateau.cases[caseX][caseY] = Type_de_case.Eau;dessine_case(contexte,plateau,caseX,caseY); break;
+			case "bouton_rail_horizontal" : plateau.cases[caseX][caseY] = Type_de_case.Rail_horizontal;dessine_case(contexte,plateau,caseX,caseY); break;
+			case "bouton_rail_vertical" : plateau.cases[caseX][caseY] = Type_de_case.Rail_vertical;dessine_case(contexte,plateau,caseX,caseY);; break;
+			case "bouton_rail_droite_vers_haut" : plateau.cases[caseX][caseY] = Type_de_case.Rail_droite_vers_haut;dessine_case(contexte,plateau,caseX,caseY); break;
+			case "bouton_rail_haut_vers_droite" : plateau.cases[caseX][caseY] = Type_de_case.Rail_haut_vers_droite;dessine_case(contexte,plateau,caseX,caseY); break;
+			case "bouton_rail_droite_vers_bas" : plateau.cases[caseX][caseY] = Type_de_case.Rail_droite_vers_bas;dessine_case(contexte,plateau,caseX,caseY); break;
+			case "bouton_rail_bas_vers_droite" : plateau.cases[caseX][caseY] = Type_de_case.Rail_bas_vers_droite;dessine_case(contexte,plateau,caseX,caseY); break;
+			case "bouton_train_1" :
+				if (plateau.cases[caseX][caseY] == Type_de_case.Rail_horizontal){
+					let train = new Train(caseX,caseY,"1");
+					tableauTrains.push(train);
+					dessiner_train(caseX,caseY,"1");
+					break;
+				}
+			case "bouton_train_2" :
+				if (plateau.cases[caseX][caseY] == Type_de_case.Rail_horizontal){
+					dessiner_train(caseX,caseY,"1");
+					dessiner_train(caseX - 1,caseY,"2");
+					let train1 = new Train(caseX,caseY,"1");
+					let train2 = new Train(caseX - 1,caseY,"2");
+					tableauTrains.push(train1);
+					tableauTrains.push(train2);
+					break;
+				}
+			case "bouton_train_4" :
+				if (plateau.cases[caseX][caseY] == Type_de_case.Rail_horizontal){
+					dessiner_train(caseX,caseY,"1");
+					dessiner_train(caseX - 1,caseY,"2");
+					dessiner_train(caseX - 2,caseY,"2");
+					dessiner_train(caseX - 3,caseY,"2");
+					let train1 = new Train(caseX,caseY,"1");
+					let train2 = new Train(caseX - 1,caseY,"2");
+					let train3 = new Train(caseX - 2,caseY,"2");
+					let train4 = new Train(caseX - 3,caseY,"2");
+					tableauTrains.push(train1);
+					tableauTrains.push(train2);
+					tableauTrains.push(train3);
+					tableauTrains.push(train4);
+					break;
+			}
+			case "bouton_train_6" :
+				if (plateau.cases[caseX][caseY] == Type_de_case.Rail_horizontal){
+					dessiner_train(caseX,caseY,"1");
+					dessiner_train(caseX - 1,caseY,"2");
+					dessiner_train(caseX - 2,caseY,"2");
+					dessiner_train(caseX - 3,caseY,"2");
+					dessiner_train(caseX - 4,caseY,"2");
+					dessiner_train(caseX - 5,caseY,"2");
+					let train1 = new Train(caseX,caseY,"1");
+					let train2 = new Train(caseX - 1,caseY,"2");
+					let train3 = new Train(caseX - 2,caseY,"2");
+					let train4 = new Train(caseX - 3,caseY,"2");
+					let train5 = new Train(caseX - 4,caseY,"2");
+					let train6 = new Train(caseX - 5,caseY,"2");
+					tableauTrains.push(train1);
+					tableauTrains.push(train2);
+					tableauTrains.push(train3);
+					tableauTrains.push(train4);
+					tableauTrains.push(train5);
+					tableauTrains.push(train6);
+
+					break;
+			}
 		}
-		console.log(plateau.cases[caseX][caseY]);
-		dessine_case(contexte,plateau,caseX,caseY);
+		id = null;
+		//console.log(plateau.cases[caseX][caseY]);
+		bouton.disabled = false;
 	});
+}
+function dessiner_train(caseX,caseY,type){
+	const contexte = document.getElementById('simulateur').getContext("2d");
+
+		if(type == "1"){
+			contexte.drawImage(IMAGE_LOCO, caseX * LARGEUR_CASE, caseY * HAUTEUR_CASE, LARGEUR_CASE, HAUTEUR_CASE);
+		}
+		else{
+			contexte.drawImage(IMAGE_WAGON, caseX * LARGEUR_CASE, caseY * HAUTEUR_CASE, LARGEUR_CASE, HAUTEUR_CASE);
+		}
+}
+function effacer_train(caseX,caseY,plateau){
+	const contexte = document.getElementById('simulateur').getContext("2d");
+	contexte.clearRect(caseX * LARGEUR_CASE, caseY * HAUTEUR_CASE, LARGEUR_CASE, HAUTEUR_CASE);
+	dessine_case(contexte,plateau,caseX,caseY);
+}
+function deplacer_trains(plateau,tableauTrains,Pause){
+	if(Pause == false){
+		tableauTrains.forEach((train) => {
+		let chgmt = 0;
+		if(checkbounds(train)==1){
+			detruire_train(train,tableauTrains);
+			effacer_train(train.x,train.y,plateau);
+			return;
+		}
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail horizontal' && train.direction == "droite"){
+			chgmt = 1;
+		}
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail horizontal' && train.direction == "gauche"){
+			chgmt = 1;
+		}
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail vertical' && train.direction == "haut"){
+			chgmt = 1;
+		}
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail vertical' && train.direction == "bas"){
+			chgmt = 1;
+		}
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail droite vers haut' && train.direction == "droite"){
+			train.direction = "haut";
+			chgmt = 1;
+		}else
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail droite vers haut' && train.direction == "bas"){
+			train.direction = "gauche";
+			chgmt = 1;
+		}else
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail bas vers droite' && train.direction == "bas"){
+			train.direction = "droite";
+			chgmt = 1;
+		}else
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail bas vers droite' && train.direction == "gauche"){
+			train.direction = "haut";
+			chgmt = 1;
+		}else
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail droite vers bas' && train.direction == "droite"){
+			train.direction = "bas";
+			chgmt = 1;
+		}else
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail droite vers bas' && train.direction == "haut"){
+			train.direction = "gauche";
+			chgmt = 1;
+		}else
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail haut vers droite' && train.direction == "haut"){
+			train.direction = "droite";
+			chgmt = 1;
+		}else
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail haut vers droite' && train.direction == "gauche"){
+			train.direction = "bas";
+			chgmt = 1;
+		}
+		if (chgmt == 0){
+			effacer_train(train.x,train.y,plateau);
+			detruire_train(train,tableauTrains);
+			effacer_train(train.x,train.y,plateau);
+			return;
+		}
+		chgmt = 0;
+		if(train.direction == "droite"){
+			effacer_train(train.x,train.y,plateau);
+			train.x++;
+			dessiner_train(train.x,train.y,train.type);
+		}
+		else if(train.direction == "gauche"){
+			effacer_train(train.x,train.y,plateau);
+			train.x--;
+			dessiner_train(train.x,train.y,train.type);
+		}
+		else if(train.direction == "haut"){
+			effacer_train(train.x,train.y,plateau);
+			train.y--;
+			dessiner_train(train.x,train.y,train.type);
+		}
+		else if(train.direction == "bas"){
+			effacer_train(train.x,train.y,plateau);
+			train.y++;
+			dessiner_train(train.x,train.y,train.type);
+		}
+		if(checkcollisions(train,tableauTrains,plateau)==1){
+			return;
+		}
+	});
+
+	}
+}
+function detruire_train(train, tableauTrains){
+	let index = tableauTrains.indexOf(train);
+	if (index !== -1) {
+	  	tableauTrains.splice(index, 1);
+	}
+}
+function checkbounds(train){
+	if(train.x < 0 || train.x > LARGEUR_PLATEAU || train.y < 0 || train.y > HAUTEUR_PLATEAU){
+		return 1;
+	}
+	return 0;
+}
+function checkcollisions(train,tableauTrains,plateau){
+	tableauTrains.forEach((train2) => {
+		if(train != train2 && train.x == train2.x && train.y == train2.y){
+			effacer_train(train.x,train.y,plateau);
+			detruire_train(train,tableauTrains);
+			effacer_train(train2.x,train2.y,plateau);
+			detruire_train(train2,tableauTrains);
+			return 1;
+		}
+	});
+	return 0;
 }
