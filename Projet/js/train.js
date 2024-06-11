@@ -306,10 +306,10 @@ function tchou(){
 	// Création du plateau
 	let plateau = new Plateau();
 	cree_plateau_initial(plateau);
-	boutonsinit(plateau);
-	
+
 	// Dessine le plateau
 	dessine_plateau(contexte, plateau);
+	boutonsinit(plateau);
 	console.log(contexte);
 
 }
@@ -321,32 +321,41 @@ function tchou(){
 window.addEventListener("load", () => {
 	// Appel à la fonction principale
 	tchou();
-	
+
 });
 function boutonsinit(plateau){
 	const boutons = document.querySelectorAll('input');
 		boutons.forEach((bouton) => {
-		bouton.addEventListener('click', () => {
-		console.log(bouton.id);
-		bouton.disabled = true;
-		posercase(bouton.alt,plateau);
-		bouton.disabled = false;
+			bouton.addEventListener('click', () => {
+				console.log(bouton.id);
+				bouton.disabled = true;
+				posercase(bouton.id,plateau);
+				bouton.disabled = false;
+			});
 		});
-	});
 }
 function posercase(id,plateau){
 	const canvas = document.getElementById('simulateur');
 	const contexte = document.getElementById('simulateur').getContext("2d");
-	console.log(contexte);
-	
+
 	canvas.addEventListener('click', function(event) {
     	const rect = canvas.getBoundingClientRect();
     	const x = event.clientX - rect.left;
     	const y = event.clientY - rect.top;
     	const caseX = Math.floor(x / LARGEUR_CASE);
     	const caseY = Math.floor(y / HAUTEUR_CASE);
-		console.log("caseX = " + caseX + " caseY =" + caseY);
-    	plateau.cases[caseX][caseY] = new Type_de_case(id);
+		console.log(id);
+		switch(id){
+			case "foret" : plateau.cases[caseX][caseY] = Type_de_case.Foret; break;
+			case "eau" : plateau.cases[caseX][caseY] = Type_de_case.Eau; break;
+			case "rail_horizontal" : plateau.cases[caseX][caseY] = Type_de_case.Rail_horizontal; break;
+			case "rail_vertical" : plateau.cases[caseX][caseY] = Type_de_case.Rail_vertical; break;
+			case "rail_droite_vers_haut" : plateau.cases[caseX][caseY] = Type_de_case.Rail_droite_vers_haut; break;
+			case "rail_haut_vers_droite" : plateau.cases[caseX][caseY] = Type_de_case.Rail_haut_vers_droite; break;
+			case "rail_droite_vers_bas" : plateau.cases[caseX][caseY] = Type_de_case.Rail_droite_vers_bas; break;
+			case "rail_bas_vers_droite" : plateau.cases[caseX][caseY] = Type_de_case.Rail_bas_vers_droite; break;
+		}
+		console.log(plateau.cases[caseX][caseY]);
 		dessine_case(contexte,plateau,caseX,caseY);
-	});	
+	});
 }
