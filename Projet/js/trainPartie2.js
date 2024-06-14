@@ -34,6 +34,10 @@ class Type_de_case{
 
 	static Eau						= new Type_de_case('eau');
 
+	static Gare						= new Type_de_case('gare');
+
+	static Barriere					= new Type_de_case('barriere');
+
 	static Rail_horizontal			= new Type_de_case('rail horizontal');
 
 	static Rail_vertical			= new Type_de_case('rail vertical');
@@ -66,6 +70,12 @@ IMAGE_EAU.src = 'images/eau.png';
 const IMAGE_FORET = new Image();
 IMAGE_FORET.src = 'images/foret.png';
 
+const IMAGE_GARE = new Image();
+IMAGE_GARE.src = 'images/gare.png';
+
+const IMAGE_BARRIERE = new Image();
+IMAGE_BARRIERE.src = 'images/barriere.png';
+
 const IMAGE_LOCO = new Image();
 IMAGE_LOCO.src = 'images/locomotive.png';
 
@@ -89,6 +99,7 @@ IMAGE_RAIL_HAUT_VERS_DROITE.src = 'images/rail-haut-vers-droite.png';
 
 const IMAGE_WAGON = new Image();
 IMAGE_WAGON.src = 'images/wagon.png';
+
 
 
 /************************************************************/
@@ -131,13 +142,15 @@ class Plateau{
 // TODO : d'autres classes si besoin
 
 class Train{
-	constructor(posX,posY,type,loco){
+	constructor(posX,posY,type,loco,nb){
 		this.x = posX;
 		this.y = posY;
 		this.type = type;
 		this.direction= "droite";
 		this.wagons= [];
 		this.loco = loco;
+		this.stop=0;
+		this.nbwag=nb;
 	}
 }
 
@@ -150,6 +163,8 @@ function image_of_case(type_de_case){
 	switch(type_de_case){
 		case Type_de_case.Foret					: return IMAGE_FORET;
 		case Type_de_case.Eau					: return IMAGE_EAU;
+		case Type_de_case.Gare					: return IMAGE_GARE;
+		case Type_de_case.Barriere				: return IMAGE_BARRIERE;
 		case Type_de_case.Rail_horizontal		: return IMAGE_RAIL_HORIZONTAL;
 		case Type_de_case.Rail_vertical			: return IMAGE_RAIL_VERTICAL;
 		case Type_de_case.Rail_droite_vers_haut	: return IMAGE_RAIL_DROITE_VERS_HAUT;
@@ -167,6 +182,7 @@ function dessine_case(contexte, plateau, x, y){
 
 	let image_a_afficher = image_of_case(la_case);
 	// Affiche l'image concernée
+
 	contexte.drawImage(image_a_afficher, x * LARGEUR_CASE, y * HAUTEUR_CASE, LARGEUR_CASE, HAUTEUR_CASE);
 }
 
@@ -317,12 +333,14 @@ function tchou(){
 		this.textContent = Pause ? 'Redémarrer' : 'Pause';
 	});
 
+
 	// NOTE: ce qui suit est sûrement à compléter voire à réécrire intégralement
 
 	// Création du plateau
 	let plateau = new Plateau();
 	let tableauTrains = [];
 	cree_plateau_initial(plateau);
+
 
 
 	// Dessine le plateau
@@ -338,8 +356,8 @@ function tchou(){
 // NOTE: rien à modifier ici !
 window.addEventListener("load", () => {
 	// Appel à la fonction principale
-
 	tchou();
+
 
 });
 
@@ -366,6 +384,11 @@ function posercase(id,plateau,tableauTrains,bouton){
 		switch(id){
 			case "bouton_foret" : plateau.cases[caseX][caseY] = Type_de_case.Foret;dessine_case(contexte,plateau,caseX,caseY); break;
 			case "bouton_eau" : plateau.cases[caseX][caseY] = Type_de_case.Eau;dessine_case(contexte,plateau,caseX,caseY); break;
+			case "bouton_gare" :
+				if(plateau.cases[caseX][caseY] == Type_de_case.Foret && plateau.cases[caseX+1][caseY] != Type_de_case.Gare && plateau.cases[caseX][caseY+1] != Type_de_case.Gare && plateau.cases[caseX+1][caseY+1] != Type_de_case.Gare && plateau.cases[caseX-1][caseY] != Type_de_case.Gare && plateau.cases[caseX][caseY-1] != Type_de_case.Gare && plateau.cases[caseX+1][caseY-1] != Type_de_case.Gare && plateau.cases[caseX-1][caseY+1] != Type_de_case.Gare){
+					plateau.cases[caseX][caseY] = Type_de_case.Gare;dessine_case(contexte,plateau,caseX,caseY); break;
+				}else{break;}
+			case "bouton_barriere" : plateau.cases[caseX][caseY] = Type_de_case.Barriere;dessine_case(contexte,plateau,caseX,caseY); break;
 			case "bouton_rail_horizontal" : plateau.cases[caseX][caseY] = Type_de_case.Rail_horizontal;dessine_case(contexte,plateau,caseX,caseY); break;
 			case "bouton_rail_vertical" : plateau.cases[caseX][caseY] = Type_de_case.Rail_vertical;dessine_case(contexte,plateau,caseX,caseY);; break;
 			case "bouton_rail_droite_vers_haut" : plateau.cases[caseX][caseY] = Type_de_case.Rail_droite_vers_haut;dessine_case(contexte,plateau,caseX,caseY); break;
@@ -374,20 +397,24 @@ function posercase(id,plateau,tableauTrains,bouton){
 			case "bouton_rail_bas_vers_droite" : plateau.cases[caseX][caseY] = Type_de_case.Rail_bas_vers_droite;dessine_case(contexte,plateau,caseX,caseY); break;
 			case "bouton_train_1" :
 				if (plateau.cases[caseX][caseY] == Type_de_case.Rail_horizontal){
-					let train = new Train(caseX,caseY,"1",1);
+					let train = new Train(caseX,caseY,"1",1,0);
 					tableauTrains.push(train);
 					dessiner_train(caseX,caseY,"1");
+                    let tchou = document.getElementById('tchou');
+                    tchou.play();
 					break;
 				}
 			case "bouton_train_2" :
 				if (plateau.cases[caseX][caseY] == Type_de_case.Rail_horizontal && plateau.cases[caseX - 1][caseY] == Type_de_case.Rail_horizontal){
 					dessiner_train(caseX,caseY,"1");
 					dessiner_train(caseX - 1,caseY,"2",2);
-					let train1 = new Train(caseX,caseY,"1",1);
-					let train2 = new Train(caseX - 1,caseY,"2",0);
+					let train1 = new Train(caseX,caseY,"1",1,1);
+					let train2 = new Train(caseX - 1,caseY,"2",0,0);
 					train1.wagons.push(train2);
 					tableauTrains.push(train1);
 					tableauTrains.push(train2);
+                    let tchou = document.getElementById('tchou');
+                    tchou.play();
 					break;
 				}
 			case "bouton_train_4" :
@@ -396,10 +423,10 @@ function posercase(id,plateau,tableauTrains,bouton){
 					dessiner_train(caseX - 1,caseY,"2");
 					dessiner_train(caseX - 2,caseY,"2");
 					dessiner_train(caseX - 3,caseY,"2");
-					let train1 = new Train(caseX,caseY,"1",1);
-					let train2 = new Train(caseX - 1,caseY,"2",2);
-					let train3 = new Train(caseX - 2,caseY,"2",2);
-					let train4 = new Train(caseX - 3,caseY,"2",2);
+					let train1 = new Train(caseX,caseY,"1",3);
+					let train2 = new Train(caseX - 1,caseY,"2",0);
+					let train3 = new Train(caseX - 2,caseY,"2",0);
+					let train4 = new Train(caseX - 3,caseY,"2",0);
 					train1.wagons.push(train2);
 					train1.wagons.push(train3);
 					train1.wagons.push(train4);
@@ -407,6 +434,8 @@ function posercase(id,plateau,tableauTrains,bouton){
 					tableauTrains.push(train2);
 					tableauTrains.push(train3);
 					tableauTrains.push(train4);
+                    let tchou = document.getElementById('tchou');
+                    tchou.play();
 					break;
 			}
 			case "bouton_train_6" :
@@ -417,12 +446,12 @@ function posercase(id,plateau,tableauTrains,bouton){
 					dessiner_train(caseX - 3,caseY,"2");
 					dessiner_train(caseX - 4,caseY,"2");
 					dessiner_train(caseX - 5,caseY,"2");
-					let train1 = new Train(caseX,caseY,"1",1);
-					let train2 = new Train(caseX - 1,caseY,"2",2);
-					let train3 = new Train(caseX - 2,caseY,"2",2);
-					let train4 = new Train(caseX - 3,caseY,"2",2);
-					let train5 = new Train(caseX - 4,caseY,"2",2);
-					let train6 = new Train(caseX - 5,caseY,"2",2);
+					let train1 = new Train(caseX,caseY,"1",5);
+					let train2 = new Train(caseX - 1,caseY,"2",0);
+					let train3 = new Train(caseX - 2,caseY,"2",0);
+					let train4 = new Train(caseX - 3,caseY,"2",0);
+					let train5 = new Train(caseX - 4,caseY,"2",0);
+					let train6 = new Train(caseX - 5,caseY,"2",0);
 					train1.wagons.push(train2);
 					train1.wagons.push(train3);
 					train1.wagons.push(train4);
@@ -434,7 +463,8 @@ function posercase(id,plateau,tableauTrains,bouton){
 					tableauTrains.push(train4);
 					tableauTrains.push(train5);
 					tableauTrains.push(train6);
-
+                    let tchou = document.getElementById('tchou');
+                    tchou.play();
 					break;
 			}
 		}
@@ -461,11 +491,35 @@ function effacer_train(caseX,caseY,plateau){
 function deplacer_trains(plateau,tableauTrains,Pause){
 	if(Pause == false){
 		tableauTrains.forEach((train) => {
+		if(train.stop == -2){
+			return;
+		}
+		if(train.stop > 0){
+			if(train.stop == 6){
+				train.stop = -1;
+			}else{
+				train.stop++;
+			}
+			return;
+		}
 		let chgmt = 0;
 		if(checkbounds(train)==1){
 			detruire_train(train,tableauTrains,plateau);
 			effacer_train(train.x,train.y,plateau);
 			return;
+		}
+		if(checkgare(train,plateau)==1 && train.stop == 0){
+			train.stop++;
+			let sncf = document.getElementById('sncf');
+			sncf.play();
+			train.wagons.forEach(wagon => {
+				wagon.stop=-2;
+			});
+			return;
+		}
+		if(plateau.cases[train.x+1][train.y].nom == 'barriere' && train.loco == 1){
+			retourner(train);
+			return
 		}
 		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail horizontal' && train.direction == "droite"){
 			chgmt = 1;
@@ -512,6 +566,13 @@ function deplacer_trains(plateau,tableauTrains,Pause){
 			chgmt = 1;
 		}
 		if (chgmt == 0){
+            if(plateau.cases[train.x][train.y].nom == 'eau'){
+                let splash = document.getElementById('eau');
+                splash.play();
+                effacer_train(train.x,train.y,plateau);
+                detruire_train(train,tableauTrains,plateau);
+                return;
+            }
 			effacer_train(train.x,train.y,plateau);
 			detruire_train(train,tableauTrains,plateau);
 			effacer_train(train.x,train.y,plateau);
@@ -541,6 +602,10 @@ function deplacer_trains(plateau,tableauTrains,Pause){
 		if(checkcollisions(train,tableauTrains,plateau)==1){
 			return;
 		}
+		train.stop = 0;
+		train.wagons.forEach(wagon => {
+			wagon.stop = 0;
+		});
 	});
 
 	}
@@ -568,8 +633,62 @@ function checkcollisions(train,tableauTrains,plateau){
 			detruire_train(train,tableauTrains,plateau);
 			effacer_train(train2.x,train2.y,plateau);
 			detruire_train(train2,tableauTrains,plateau);
+            let boum = document.getElementById('explosion');
+            boum.play();
+            const contexte = document.getElementById('simulateur').getContext("2d");
+
 			return 1;
 		}
 	});
 	return 0;
+}
+function checkgare(train,plateau){
+	if(train.loco == 1){
+		if(plateau.cases[train.x][train.y-1].nom == 'gare'){
+			return 1;
+		}
+	}
+	return 0;
+}
+function retourner(train){
+
+	train.wagons.forEach((wagon) => {
+		if(wagon.direction == "droite"){
+			wagon.direction = "gauche";
+		}
+		else if(wagon.direction == "gauche"){
+			wagon.direction = "droite";
+		}
+		else if(wagon.direction == "haut"){
+			wagon.direction = "bas";
+		}
+		else if(wagon.direction == "bas"){
+			wagon.direction = "haut";
+		}
+	});
+	if(train.direction == "droite"){
+		train.direction = "gauche";
+	}
+	else if(train.direction == "gauche"){
+		train.direction = "droite";
+	}
+	else if(train.direction == "haut"){
+		train.direction = "bas";
+	}
+	else if(train.direction == "bas"){
+		train.direction = "haut";
+	}
+	if(train.loco==1){
+		let wagon = train.wagons[train.nbwag-1];
+		let aux = train.x;
+		let aux2 = train.y;
+		train.x = wagon.x;
+		train.y = wagon.y;
+		wagon.x = aux;
+		wagon.y = aux2;
+		let aux3 = train.direction;
+		train.direction = wagon.direction;
+		wagon.direction = aux3;
+	}
+
 }
