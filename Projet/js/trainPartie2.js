@@ -42,6 +42,8 @@ class Type_de_case{
 
 	static Rail_vertical			= new Type_de_case('rail vertical');
 
+	static Rail_croise 				= new Type_de_case('rail croise')
+
 	// NOTE: faisant la jonction de horizontal à vertical en allant vers la droite puis vers le haut (ou de vertical vers horizontal en allant de bas vers gauche)
 	static Rail_droite_vers_haut	= new Type_de_case('rail droite vers haut');
 
@@ -84,6 +86,9 @@ IMAGE_RAIL_HORIZONTAL.src = 'images/rail-horizontal.png';
 
 const IMAGE_RAIL_VERTICAL = new Image();
 IMAGE_RAIL_VERTICAL.src = 'images/rail-vertical.png';
+
+const IMAGE_RAIL_CROISE = new Image();
+IMAGE_RAIL_CROISE.src = 'images/rail-croise.jpg';
 
 const IMAGE_RAIL_BAS_VERS_DROITE = new Image();
 IMAGE_RAIL_BAS_VERS_DROITE.src = 'images/rail-bas-vers-droite.png';
@@ -167,6 +172,7 @@ function image_of_case(type_de_case){
 		case Type_de_case.Barriere				: return IMAGE_BARRIERE;
 		case Type_de_case.Rail_horizontal		: return IMAGE_RAIL_HORIZONTAL;
 		case Type_de_case.Rail_vertical			: return IMAGE_RAIL_VERTICAL;
+		case Type_de_case.Rail_croise 			: return IMAGE_RAIL_CROISE;
 		case Type_de_case.Rail_droite_vers_haut	: return IMAGE_RAIL_DROITE_VERS_HAUT;
 		case Type_de_case.Rail_haut_vers_droite	: return IMAGE_RAIL_HAUT_VERS_DROITE;
 		case Type_de_case.Rail_droite_vers_bas	: return IMAGE_RAIL_DROITE_VERS_BAS;
@@ -216,102 +222,113 @@ function dessine_plateau(page, plateau){
 // NOTE : ne pas modifier le plateau initial
 function cree_plateau_initial(plateau){
 	// Circuit
-	plateau.cases[12][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[13][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[14][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[15][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[16][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[17][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[18][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[19][7] = Type_de_case.Rail_droite_vers_haut;
-	plateau.cases[19][6] = Type_de_case.Rail_vertical;
-	plateau.cases[19][5] = Type_de_case.Rail_droite_vers_bas;
-	plateau.cases[12][5] = Type_de_case.Rail_horizontal;
-	plateau.cases[13][5] = Type_de_case.Rail_horizontal;
-	plateau.cases[14][5] = Type_de_case.Rail_horizontal;
-	plateau.cases[15][5] = Type_de_case.Rail_horizontal;
-	plateau.cases[16][5] = Type_de_case.Rail_horizontal;
-	plateau.cases[17][5] = Type_de_case.Rail_horizontal;
-	plateau.cases[18][5] = Type_de_case.Rail_horizontal;
-	plateau.cases[11][5] = Type_de_case.Rail_haut_vers_droite;
-	plateau.cases[11][6] = Type_de_case.Rail_vertical;
-	plateau.cases[11][7] = Type_de_case.Rail_bas_vers_droite;
+	for (let x = 0; x < 30; x++) {
+        plateau.cases[x][0] = Type_de_case.Rail_horizontal;
+    }
+    // Rail horizontal en bas
+    for (let x = 0; x < 30; x++) {
+        plateau.cases[x][14] = Type_de_case.Rail_horizontal;
+    }
+    // Rail vertical à gauche
+    for (let y = 0; y < 15; y++) {
+        plateau.cases[0][y] = Type_de_case.Rail_vertical;
+    }
+    // Rail vertical à droite
+    for (let y = 0; y < 15; y++) {
+        plateau.cases[29][y] = Type_de_case.Rail_vertical;
+    }
 
-	// Segment isolé à gauche
-	plateau.cases[0][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[1][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[2][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[3][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[4][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[5][7] = Type_de_case.Eau;
-	plateau.cases[6][7] = Type_de_case.Rail_horizontal;
-	plateau.cases[7][7] = Type_de_case.Rail_horizontal;
+    // Coins
+    plateau.cases[0][0] = Type_de_case.Rail_haut_vers_droite;
+    plateau.cases[29][0] = Type_de_case.Rail_droite_vers_bas;
+    plateau.cases[0][14] = Type_de_case.Rail_bas_vers_droite;
+    plateau.cases[29][14] = Type_de_case.Rail_droite_vers_haut;
+	plateau.cases[5][5] = Type_de_case.Foret;
+    plateau.cases[6][5] = Type_de_case.Foret;
+    plateau.cases[7][5] = Type_de_case.Foret;
 
-	// Plan d'eau
-	for(let x = 22; x <= 27; x++){
-		for(let y = 2; y <= 5; y++){
-			plateau.cases[x][y] = Type_de_case.Eau;
-		}
-	}
+    // Ajout de quelques étendues d'eau
+    plateau.cases[10][10] = Type_de_case.Eau;
+    plateau.cases[11][10] = Type_de_case.Eau;
 
-	// Segment isolé à droite
-	plateau.cases[22][8] = Type_de_case.Rail_horizontal;
-	plateau.cases[23][8] = Type_de_case.Rail_horizontal;
-	plateau.cases[24][8] = Type_de_case.Rail_horizontal;
-	plateau.cases[25][8] = Type_de_case.Rail_horizontal;
-	plateau.cases[26][8] = Type_de_case.Rail_bas_vers_droite;
-	plateau.cases[27][8] = Type_de_case.Rail_horizontal;
-	plateau.cases[28][8] = Type_de_case.Rail_horizontal;
-	plateau.cases[29][8] = Type_de_case.Rail_horizontal;
+    // Ajout d'une gare
+    plateau.cases[15][7] = Type_de_case.Gare;
 
-	// TCHOU
-	plateau.cases[3][10] = Type_de_case.Eau;
-	plateau.cases[4][10] = Type_de_case.Eau;
-	plateau.cases[4][11] = Type_de_case.Eau;
-	plateau.cases[4][12] = Type_de_case.Eau;
-	plateau.cases[4][13] = Type_de_case.Eau;
-	plateau.cases[4][13] = Type_de_case.Eau;
-	plateau.cases[5][10] = Type_de_case.Eau;
+    // Ajout de quelques barrières
+    plateau.cases[8][3] = Type_de_case.Barriere;
+    plateau.cases[8][6] = Type_de_case.Barriere;
 
-	plateau.cases[7][10] = Type_de_case.Eau;
-	plateau.cases[7][11] = Type_de_case.Eau;
-	plateau.cases[7][12] = Type_de_case.Eau;
-	plateau.cases[7][13] = Type_de_case.Eau;
-	plateau.cases[8][10] = Type_de_case.Eau;
-	plateau.cases[9][10] = Type_de_case.Eau;
-	plateau.cases[8][13] = Type_de_case.Eau;
-	plateau.cases[9][13] = Type_de_case.Eau;
+	const startX = 12;
+    const startY = 4;
+    const lacSize = 6;
+    for (let x = startX; x < startX + lacSize; x++) {
+        for (let y = startY; y < startY + lacSize; y++) {
+            plateau.cases[x][y] = Type_de_case.Eau;
+        }
+    }
+	//creation d'un circuit en huit
+	plateau.cases[20][7] = Type_de_case.Rail_horizontal;
+	plateau.cases[21][7] = Type_de_case.Rail_horizontal;
+	plateau.cases[22][7] = Type_de_case.Rail_horizontal;
+	plateau.cases[19][7] = Type_de_case.Rail_haut_vers_droite;
+	plateau.cases[19][8] = Type_de_case.Rail_vertical;
+	plateau.cases[19][9] = Type_de_case.Rail_vertical;
+	plateau.cases[19][10] = Type_de_case.Rail_bas_vers_droite;
+	plateau.cases[20][10] = Type_de_case.Rail_horizontal;
+	plateau.cases[21][10] = Type_de_case.Rail_horizontal;
+	plateau.cases[22][10] = Type_de_case.Rail_horizontal;
+	plateau.cases[23][10] = Type_de_case.Rail_droite_vers_haut;
+	plateau.cases[23][9] = Type_de_case.Rail_vertical;
+	plateau.cases[23][8] = Type_de_case.Rail_vertical;
+	plateau.cases[23][7] = Type_de_case.Rail_croise;
+	plateau.cases[23][6] = Type_de_case.Rail_vertical;
+	plateau.cases[23][5] = Type_de_case.Rail_vertical;
+	plateau.cases[23][4] = Type_de_case.Rail_haut_vers_droite;
+	plateau.cases[24][4] = Type_de_case.Rail_horizontal;
+	plateau.cases[25][4] = Type_de_case.Rail_horizontal;
+	plateau.cases[26][4] = Type_de_case.Rail_horizontal;
+	plateau.cases[27][4] = Type_de_case.Rail_droite_vers_bas;
+	plateau.cases[27][5] = Type_de_case.Rail_vertical;
+	plateau.cases[27][6] = Type_de_case.Rail_vertical;
+	plateau.cases[27][7] = Type_de_case.Rail_droite_vers_haut;
+	plateau.cases[26][7] = Type_de_case.Rail_horizontal;
+	plateau.cases[25][7] = Type_de_case.Rail_horizontal;
+	plateau.cases[24][7] = Type_de_case.Rail_horizontal;
 
-	plateau.cases[11][10] = Type_de_case.Eau;
-	plateau.cases[11][11] = Type_de_case.Eau;
-	plateau.cases[11][12] = Type_de_case.Eau;
-	plateau.cases[11][13] = Type_de_case.Eau;
-	plateau.cases[12][11] = Type_de_case.Eau;
-	plateau.cases[13][10] = Type_de_case.Eau;
-	plateau.cases[13][11] = Type_de_case.Eau;
-	plateau.cases[13][12] = Type_de_case.Eau;
-	plateau.cases[13][13] = Type_de_case.Eau;
+	//places deux gares
+	plateau.cases[15][13] = Type_de_case.Gare;
+	plateau.cases[15][0] = Type_de_case.Gare;
+	plateau.cases[14][0] = Type_de_case.Rail_droite_vers_bas;
+	plateau.cases[16][0] = Type_de_case.Rail_haut_vers_droite;
+	plateau.cases[14][1] = Type_de_case.Rail_bas_vers_droite;
+	plateau.cases[16][1] = Type_de_case.Rail_droite_vers_haut;
+	plateau.cases[15][1] = Type_de_case.Rail_horizontal;
 
-	plateau.cases[15][10] = Type_de_case.Eau;
-	plateau.cases[15][11] = Type_de_case.Eau;
-	plateau.cases[15][12] = Type_de_case.Eau;
-	plateau.cases[15][13] = Type_de_case.Eau;
-	plateau.cases[16][10] = Type_de_case.Eau;
-	plateau.cases[16][13] = Type_de_case.Eau;
-	plateau.cases[17][10] = Type_de_case.Eau;
-	plateau.cases[17][11] = Type_de_case.Eau;
-	plateau.cases[17][12] = Type_de_case.Eau;
-	plateau.cases[17][13] = Type_de_case.Eau;
+	plateau.cases[0][7] = Type_de_case.Gare;
+	plateau.cases[0][6] = Type_de_case.Rail_bas_vers_droite;
+	plateau.cases[1][6] = Type_de_case.Rail_droite_vers_bas;
+	plateau.cases[1][7] = Type_de_case.Rail_vertical;
+	plateau.cases[1][8] = Type_de_case.Rail_droite_vers_haut;
+	plateau.cases[0][8] = Type_de_case.Rail_haut_vers_droite;
 
-	plateau.cases[19][10] = Type_de_case.Eau;
-	plateau.cases[19][11] = Type_de_case.Eau;
-	plateau.cases[19][12] = Type_de_case.Eau;
-	plateau.cases[19][13] = Type_de_case.Eau;
-	plateau.cases[20][13] = Type_de_case.Eau;
-	plateau.cases[21][10] = Type_de_case.Eau;
-	plateau.cases[21][11] = Type_de_case.Eau;
-	plateau.cases[21][12] = Type_de_case.Eau;
-	plateau.cases[21][13] = Type_de_case.Eau;
+	plateau.cases[29][11] = Type_de_case.Gare;
+	plateau.cases[29][10] = Type_de_case.Rail_droite_vers_haut;
+	plateau.cases[28][10] = Type_de_case.Rail_haut_vers_droite;
+	plateau.cases[28][11] = Type_de_case.Rail_vertical;
+	plateau.cases[28][12] = Type_de_case.Rail_bas_vers_droite;
+	plateau.cases[29][12] = Type_de_case.Rail_droite_vers_bas;
+
+	plateau.cases[7][3] = Type_de_case.Rail_horizontal;
+	plateau.cases[6][3] = Type_de_case.Rail_horizontal;
+	plateau.cases[5][3] = Type_de_case.Rail_horizontal;
+	plateau.cases[4][3] = Type_de_case.Rail_haut_vers_droite;
+	plateau.cases[4][4] = Type_de_case.Rail_vertical;
+	plateau.cases[4][5] = Type_de_case.Rail_vertical;
+	plateau.cases[4][6] = Type_de_case.Rail_bas_vers_droite;
+	plateau.cases[5][6] = Type_de_case.Rail_horizontal;
+	plateau.cases[6][6] = Type_de_case.Rail_horizontal;
+	plateau.cases[7][6] = Type_de_case.Rail_horizontal;
+
 }
 
 
@@ -385,12 +402,13 @@ function posercase(id,plateau,tableauTrains,bouton){
 			case "bouton_foret" : plateau.cases[caseX][caseY] = Type_de_case.Foret;dessine_case(contexte,plateau,caseX,caseY); break;
 			case "bouton_eau" : plateau.cases[caseX][caseY] = Type_de_case.Eau;dessine_case(contexte,plateau,caseX,caseY); break;
 			case "bouton_gare" :
-				if(plateau.cases[caseX][caseY] == Type_de_case.Foret && plateau.cases[caseX+1][caseY] != Type_de_case.Gare && plateau.cases[caseX][caseY+1] != Type_de_case.Gare && plateau.cases[caseX+1][caseY+1] != Type_de_case.Gare && plateau.cases[caseX-1][caseY] != Type_de_case.Gare && plateau.cases[caseX][caseY-1] != Type_de_case.Gare && plateau.cases[caseX+1][caseY-1] != Type_de_case.Gare && plateau.cases[caseX-1][caseY+1] != Type_de_case.Gare){
+				if(plateau.cases[caseX][caseY] == Type_de_case.Foret && plateau.cases[caseX+1][caseY] != Type_de_case.Gare && plateau.cases[caseX][caseY+1] == Type_de_case.Rail_horizontal && plateau.cases[caseX+1][caseY+1] != Type_de_case.Gare && plateau.cases[caseX-1][caseY] != Type_de_case.Gare && plateau.cases[caseX][caseY-1] != Type_de_case.Gare && plateau.cases[caseX+1][caseY-1] != Type_de_case.Gare && plateau.cases[caseX-1][caseY+1] != Type_de_case.Gare){
 					plateau.cases[caseX][caseY] = Type_de_case.Gare;dessine_case(contexte,plateau,caseX,caseY); break;
 				}else{break;}
 			case "bouton_barriere" : plateau.cases[caseX][caseY] = Type_de_case.Barriere;dessine_case(contexte,plateau,caseX,caseY); break;
 			case "bouton_rail_horizontal" : plateau.cases[caseX][caseY] = Type_de_case.Rail_horizontal;dessine_case(contexte,plateau,caseX,caseY); break;
-			case "bouton_rail_vertical" : plateau.cases[caseX][caseY] = Type_de_case.Rail_vertical;dessine_case(contexte,plateau,caseX,caseY);; break;
+			case "bouton_rail_vertical" : plateau.cases[caseX][caseY] = Type_de_case.Rail_vertical;dessine_case(contexte,plateau,caseX,caseY); break;
+			case "bouton_rail_croise" : plateau.cases[caseX][caseY] = Type_de_case.Rail_croise;dessine_case(contexte,plateau,caseX,caseY);break;
 			case "bouton_rail_droite_vers_haut" : plateau.cases[caseX][caseY] = Type_de_case.Rail_droite_vers_haut;dessine_case(contexte,plateau,caseX,caseY); break;
 			case "bouton_rail_haut_vers_droite" : plateau.cases[caseX][caseY] = Type_de_case.Rail_haut_vers_droite;dessine_case(contexte,plateau,caseX,caseY); break;
 			case "bouton_rail_droite_vers_bas" : plateau.cases[caseX][caseY] = Type_de_case.Rail_droite_vers_bas;dessine_case(contexte,plateau,caseX,caseY); break;
@@ -517,9 +535,8 @@ function deplacer_trains(plateau,tableauTrains,Pause){
 			});
 			return;
 		}
-		if(plateau.cases[train.x+1][train.y].nom == 'barriere' && train.loco == 1){
-			retourner(train);
-			return
+		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail croise'){
+			chgmt =1;
 		}
 		if(chgmt == 0 && plateau.cases[train.x][train.y].nom == 'rail horizontal' && train.direction == "droite"){
 			chgmt = 1;
@@ -565,10 +582,28 @@ function deplacer_trains(plateau,tableauTrains,Pause){
 			train.direction = "bas";
 			chgmt = 1;
 		}
+		if(train.loco == 1){
+			if(plateau.cases[train.x+1][train.y].nom == 'barriere' && train.direction == "droite"){
+				retourner(train);
+			}
+			if(plateau.cases[train.x-1][train.y].nom == 'barriere' && train.direction == "gauche"){
+				retourner(train);
+			}
+			if(plateau.cases[train.x][train.y+1].nom == 'barriere' && train.direction == "bas"){
+				retourner(train);
+			}
+			if(train.y!=0){
+				if(plateau.cases[train.x][train.y-1].nom == 'barriere' && train.direction == "haut"){
+					retourner(train);
+				}
+			}
+		}
 		if (chgmt == 0){
             if(plateau.cases[train.x][train.y].nom == 'eau'){
                 let splash = document.getElementById('eau');
+				splash.volume=1.0;
                 splash.play();
+				triggerSplash(train.x*LARGEUR_CASE,train.y*HAUTEUR_CASE+90);
                 effacer_train(train.x,train.y,plateau);
                 detruire_train(train,tableauTrains,plateau);
                 return;
@@ -635,7 +670,8 @@ function checkcollisions(train,tableauTrains,plateau){
 			detruire_train(train2,tableauTrains,plateau);
             let boum = document.getElementById('explosion');
             boum.play();
-            const contexte = document.getElementById('simulateur').getContext("2d");
+			triggerExplosion(((train.x+train2.x)/2)*LARGEUR_CASE,((train.y+train2.y)/2)*HAUTEUR_CASE+90);
+
 
 			return 1;
 		}
@@ -643,6 +679,9 @@ function checkcollisions(train,tableauTrains,plateau){
 	return 0;
 }
 function checkgare(train,plateau){
+	if(train.y==0){
+		return 0;
+	}
 	if(train.loco == 1){
 		if(plateau.cases[train.x][train.y-1].nom == 'gare'){
 			return 1;
@@ -651,21 +690,22 @@ function checkgare(train,plateau){
 	return 0;
 }
 function retourner(train){
-
-	train.wagons.forEach((wagon) => {
-		if(wagon.direction == "droite"){
-			wagon.direction = "gauche";
-		}
-		else if(wagon.direction == "gauche"){
-			wagon.direction = "droite";
-		}
-		else if(wagon.direction == "haut"){
-			wagon.direction = "bas";
-		}
-		else if(wagon.direction == "bas"){
-			wagon.direction = "haut";
-		}
-	});
+	if(train.nbwag!=0){
+		train.wagons.forEach((wagon) => {
+			if(wagon.direction == "droite"){
+				wagon.direction = "gauche";
+			}
+			else if(wagon.direction == "gauche"){
+				wagon.direction = "droite";
+			}
+			else if(wagon.direction == "haut"){
+				wagon.direction = "bas";
+			}
+			else if(wagon.direction == "bas"){
+				wagon.direction = "haut";
+			}
+		});
+	}
 	if(train.direction == "droite"){
 		train.direction = "gauche";
 	}
@@ -678,7 +718,7 @@ function retourner(train){
 	else if(train.direction == "bas"){
 		train.direction = "haut";
 	}
-	if(train.loco==1){
+	if(train.loco==1 && train.nbwag !=0){
 		let wagon = train.wagons[train.nbwag-1];
 		let aux = train.x;
 		let aux2 = train.y;
@@ -691,4 +731,26 @@ function retourner(train){
 		wagon.direction = aux3;
 	}
 
+}
+function triggerExplosion(x , y ) {
+    const explosionContainer = document.getElementById('explosion-container');
+    explosionContainer.style.left = `${x}px`;
+    explosionContainer.style.top = `${y}px`;
+    explosionContainer.style.display = 'block';
+
+    // Masquer le GIF après un certain temps (par exemple, 2 secondes)
+    setTimeout(() => {
+        explosionContainer.style.display = 'none';
+    }, 2000); // 2000 millisecondes = 2 secondes
+}
+function triggerSplash(x , y ) {
+	const splashContainer = document.getElementById('splash-container');
+	splashContainer.style.left = `${x}px`;
+	splashContainer.style.top = `${y}px`;
+	splashContainer.style.display = 'block';
+
+	// Masquer le GIF après un certain temps (par exemple, 2 secondes)
+	setTimeout(() => {
+		splashContainer.style.display = 'none';
+	}, 2000); // 2000 millisecondes = 2 secondes
 }

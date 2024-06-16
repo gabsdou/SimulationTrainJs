@@ -9,7 +9,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Simulateur de trains</title>
-		<link rel="stylesheet" href="css/train.css">
+		<link rel="stylesheet" href="css/trainpartie2.css">
 	</head>
 
 	<body>
@@ -28,6 +28,7 @@
 			<input type="image" id="bouton_rail_haut_vers_droite" alt="Rail allant du haut vers la droite" src="images/rail-haut-vers-droite.png" >
 			<input type="image" id="bouton_rail_droite_vers_bas" alt="Rail allant de la droite vers le bas" src="images/rail-droite-vers-bas.png" >
 			<input type="image" id="bouton_rail_bas_vers_droite" alt="Rail allant du bas vers la droite" src="images/rail-bas-vers-droite.png" >
+			<input type="image" id="bouton_rail_croise" alt="Rail croise" src="images/rail-croise.jpg" >
 			<input type="image" id="bouton_gare" alt="gare" src="images/gare.png" >
 			<input type="image" id="bouton_barriere" alt="Barriere" src="images/barriere.png" >
 
@@ -37,6 +38,12 @@
 			<input type="image" id="bouton_train_6" alt="Locomotive et 5 wagons" src="images/loco-5-wagons.png" >
 
 			<button type="button" id="bouton_pause">Pause</button>
+		</div>
+		<div id="explosion-container">
+			<img id="explosion-gif" src="images/explosion.gif" alt="Explosion">
+		</div>
+		<div id="splash-container">
+			<img id="splash-gif" src="images/eau.gif" alt="Splash">
 		</div>
         <audio id="explosion" src="sons/explosion.mp3" ></audio>
         <audio id="eau" src="sons/eau.mp3" ></audio>
