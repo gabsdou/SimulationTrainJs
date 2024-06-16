@@ -1,0 +1,58 @@
+/*
+	Css pour la page d'accueil d'un simulateur de trains
+	@author       : Katell GOUZERH and Gabriel MAHALIN
+	Created       : 2024/06/14
+*/
+
+body{
+	background-image: url("../images/fond.png");
+	color: darkgreen;
+	font-family: arial ;
+	text-align:center;
+}
+
+h1, a{
+	text-decoration:none;
+	color: darkgreen;
+}
+
+nav a{
+	width:200px;
+	display:inline-block;
+	padding:10px;
+	margin:2px;
+	color:rgb(119, 217, 128);
+	background-color:rgb(193, 255, 193);
+	transition-duration:1.5s;
+}
+
+nav a:hover{
+	background-color: rgb(193, 255, 193);
+	transition-duration:0.3s;
+	color: darkgreen;
+}
+
+main{
+	padding-bottom: 10px;
+	margin: 5px;
+}
+aside{
+	padding-bottom: 10px;
+	margin: 5px;
+}
+
+@media (min-width:960px){
+	header{grid-area:header;}
+	nav{ grid-area:menu;}
+	main{ grid-area:main;}
+	gare{ grid-area:gare;}
+	loco{ grid-area:loco;}
+	body{
+		display:grid;
+	  	grid-template-columns:1fr 1fr;
+	   	grid-template-areas:
+	     "header header"
+		 "menu menu"
+		 "aside main";
+   }
+}
